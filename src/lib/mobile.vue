@@ -14,17 +14,38 @@
                 <span @click="deleteImgData(index)">删 除</span>
             </div>
         </div>
-        <div class="add-box" :style="{width, height}" v-show="previewUrlArray.length < maxCount">
+        <div v-if="!addSlot" class="add-box" :style="{width, height}" v-show="previewUrlArray.length < maxCount">
             <div></div>
             <div></div>
-            <input type="file" accept="image/*" @change="fileChange">
+            <div class="add-box-cover" @click="showPopupWindow"></div>
         </div>
+        <input ref="fileInput" type="file" @change="fileChange" class="file-input" />
+        <slot name="add" v-bind:addProps="addProps"></slot>
+        <div class="menu-box" ref="menuBox">
+            <div class="content-box" ref="contentBox">
+                <div class="file-box">
+                    <span v-if="origin === 'all' || origin === 'album'"
+                        @click="selectFile('album')">
+                        相册
+                    </span>
+                    <span v-if="origin === 'all' || origin === 'camera'"
+                        @click="selectFile('camera')">
+                        照相机
+                    </span>
+                </div>
+                <div class="handle-box">
+                    <span @click="hidePopupWindow">取消</span>
+                </div>
+            </div>
+        </div>
+        <clip ref="clip" v-model="clipVisible"></clip>
     </div>
     
 </template>
 <script>
 import Compress from "./core";
 import BMF from "browser-md5-file";
+import clip from "./clip-area.vue";
 export default {
     props: {
         width: {
@@ -34,6 +55,10 @@ export default {
         height: {
             type: String,
             default: "100px"
+        },
+        origin: {
+            type: String,
+            default: "all"//all，既支持相机也支持相册，camera，只支持相机，album，相册
         },
         //data: 只返回数据
         //preview: 带预览框
@@ -70,14 +95,23 @@ export default {
         maxCount: {
             type: Number,
             default: 5
+        },
+        slotName: {
+            type: String | Array,
+            default: ""
         }
-
     },
     data() {
         return {
             previewUrlArray: [...this.imgUrls],
             //储存file对象的数组(二进制数据)
-            uploadFileArray: []
+            uploadFileArray: [],
+            addSlot: true,
+            addProps: {
+                text: "test",
+                click: this.showPopupWindow
+            },
+            clipVisible: false
         }
     },
     methods: {
@@ -92,6 +126,7 @@ export default {
             });
         },
         async fileChange(event) {
+            this.hidePopupWindow();
             // console.log(event);
             //拿到文件
             let file = event.target.files[0];
@@ -128,6 +163,9 @@ export default {
                 } else if (this.mode === "data") {
                     //向父组件发送事件
                     this.$emit("fileChange", originBlob);
+                } else if (this.mode === "clip") {
+                    this.clipVisible = true;
+                    this.$refs.clip.init(url);
                 }
                 event.target.value = "";
             }
@@ -165,12 +203,53 @@ export default {
                 this.imgUrls.splice(index, 1);
                 this.$emit("previewFileChange", this.previewUrlArray);
             }
-        }
+        },
+        showPopupWindow() {
+            let popupWindow = this.$refs.menuBox;
+            popupWindow.style.display = "flex";
+            let contentBox = this.$refs.contentBox;
+            setTimeout(() => {
+                contentBox.style.transform = "translateY(0)";
+            }, 17);
+        },
+        hidePopupWindow() {
+            let popupWindow = this.$refs.menuBox;
+            let contentBox = this.$refs.contentBox;
+            contentBox.style.transform = "translateY(100%)";
+            popupWindow.style.display = "none";
+        },
+        selectFile(type) {
+            let input = this.$refs.fileInput;
+            if (type === "album") {
+                input.removeAttribute("accept");
+                input.removeAttribute("capture");
+            } else if (type === "camera") {
+                input.setAttribute("accept", "image/*");
+                input.setAttribute("capture", "camera");
+            }
+            input.click();
+        },
+    },
+    components: {
+        clip
+    },
+    created() {
+    },
+    mounted() {
     },
     watch: {
         imgUrls(newVal) {
             if (newVal && newVal.length) {
                 this.previewUrlArray = [...newVal];
+            }
+        },
+        slotName(newVal) {
+            if (newVal) {
+                if (this.slotName === "add") {
+                    this.addSlot = true;
+                } else {
+                    this.addSlot = false;
+                }
             }
         }
     }
@@ -235,6 +314,15 @@ export default {
             height: 70%;
             border-left: 1px dashed #ddd;
         }
+        &>.add-box-cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            transform: unset;
+            z-index: 1;
+        }
         // &>label {
         //     display: block;
         //     width: 100%;
@@ -253,7 +341,54 @@ export default {
             opacity: 0;
         }
     }
-    
+    .menu-box {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        display: none;
+        z-index: 1;
+
+        .content-box {
+            width: 92%;
+            transition: all 0.5s;
+            transform: translateY(100%);
+
+            .file-box, .handle-box {
+                background: #fff;
+                border-radius: 5px;
+
+                &>span {
+                    // background: #fff;
+                    height: 48px;
+                    font-size: 16px;
+                    color: #999;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-bottom: 1px solid #e0e0e0;
+                }
+
+                &>span:last-of-type {
+                    border-bottom: 0;
+                }
+            }
+
+            .handle-box {
+                margin: 10px 0 5px;
+            }
+        }
+
+    }
+    .file-input {
+        width: 0;
+        height: 0;
+    }
 }
 </style>
 
