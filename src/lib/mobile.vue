@@ -165,7 +165,10 @@ export default {
                     this.$emit("fileChange", originBlob);
                 } else if (this.mode === "clip") {
                     this.clipVisible = true;
-                    this.$refs.clip.init(url);
+                    setTimeout(() => {
+                        this.$refs.clip.init(url);
+                    }, 17);
+                    
                 }
                 event.target.value = "";
             }

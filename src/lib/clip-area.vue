@@ -54,6 +54,8 @@ export default {
             let offsetY = 0;
             let boxLeft = box.getBoundingClientRect().left;
             let boxTop = box.getBoundingClientRect().top;
+            console.log("boxTop", boxTop);
+            
             let originWidth;
             let originHeight;
             let startX;
@@ -129,13 +131,19 @@ export default {
                 
                 startX = touches[0].pageX;
                 startY = touches[0].pageY;
+                // console.log("ontouchstart-startX", startX);
+                
                 // console.log(e);
                 let top = drag.getBoundingClientRect().top;
+                let scrollTop = document.documentElement.scrollTop;
+
                 let left = drag.getBoundingClientRect().left;
+                console.log("scrollTop", scrollTop);
+                
                 //手指相对于drag原点的偏移量
                 offsetX = startX - left;
-                offsetY = startY - top;
-                // console.log(offsetX);
+                offsetY = startY - top - scrollTop;
+                console.log("offsetY", offsetY);
                 
                 //判定手指处于拖拽框的哪个区域
                 
@@ -157,10 +165,12 @@ export default {
                 // console.log("startX", startX);
                 
             }
-            drag.ontouchmove = ({target, touches}) => {
-            
+            drag.ontouchmove = (e) => {
+                let {target, touches} = e;
+                e.preventDefault();
             // drag.ontouchmove = (e) => {
-
+                // preventDefault();
+                // console.log("preventDefault", preventDefault);
                 let eventX = touches[0].pageX;
                 let eventY = touches[0].pageY;
 
@@ -195,6 +205,8 @@ export default {
                 // e.preventDefault();
                 //canvas绘制透明区域
                 //拖拽框的原点坐标
+                boxLeft = box.getBoundingClientRect().left;
+                boxTop = box.getBoundingClientRect().top;
                 let _x = drag.getBoundingClientRect().left - boxLeft;
                 let _y = drag.getBoundingClientRect().top - boxTop;
 
@@ -211,6 +223,8 @@ export default {
                 //清除区域的宽高
                 let clearWidth = getStyle(drag, "width");
                 let clearHeight = getStyle(drag, "height");
+                console.log("clearHeight", clearHeight);
+                
                 clipCtx.clearRect(_x, _y, clearWidth, clearHeight);
             }
             drag.ontouchend = ({target}) => {
@@ -238,6 +252,8 @@ export default {
                     //清除区域的宽高
                     let clearWidth = getStyle(drag, "width");
                     let clearHeight = getStyle(drag, "height");
+                    console.log("clearHeight", clearHeight);
+                    
                     let _x = drag.getBoundingClientRect().left - boxLeft;
                     let _y = drag.getBoundingClientRect().top - boxTop;
                     clipCtx.clearRect(_x, _y, clearWidth, clearHeight);
