@@ -45,9 +45,9 @@ export default {
 		ImageXMobile
 	},
 	mounted() {
-		setTimeout(() => {
-			this.imgs = ["http://120.78.221.14:2233/public/upload/75909acdca7d6c9a9fd453c9f80a8472.jpeg", "http://120.78.221.14:2233/public/upload/75909acdca7d6c9a9fd453c9f80a8472.jpeg"];
-		}, 1000);
+		// setTimeout(() => {
+		// 	this.imgs = ["http://120.78.221.14:2233/public/upload/75909acdca7d6c9a9fd453c9f80a8472.jpeg", "http://120.78.221.14:2233/public/upload/75909acdca7d6c9a9fd453c9f80a8472.jpeg"];
+		// }, 1000);
 	}
 	
 };
