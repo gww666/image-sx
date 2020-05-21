@@ -61,6 +61,8 @@ export default {
             
             let originWidth;
             let originHeight;
+            let imgW;
+            let imgH;
             let startX;
             let startY;
             let scrollTop;
@@ -270,8 +272,8 @@ export default {
                 // e.preventDefault();
                 //canvas绘制透明区域
                 //拖拽框的原点坐标
-                boxLeft = box.getBoundingClientRect().left;
-                boxTop = box.getBoundingClientRect().top;
+                // boxLeft = box.getBoundingClientRect().left;
+                // boxTop = box.getBoundingClientRect().top;
                 let _x = drag.getBoundingClientRect().left - boxLeft;
                 let _y = drag.getBoundingClientRect().top - boxTop;
 
@@ -323,8 +325,10 @@ export default {
 
             img.onload = () => {
                 //初始化操作
-                console.log("img-h", img.height);
-                console.log("img-w", img.width);
+                // console.log("img-h", img.height);
+                // console.log("img-w", img.width);
+                imgW = img.width;
+                imgH = img.height;
                 
                 //预设宽高
                 let clientWidth = window.innerWidth;
@@ -367,14 +371,21 @@ export default {
                 let resultCanvas = document.createElement("canvas");
                 let resultCtx = resultCanvas.getContext("2d");
                 let _x = drag.getBoundingClientRect().left - boxLeft;
-                let _y = drag.getBoundingClientRect().top - boxTop;
+                let _y = drag.getBoundingClientRect().top - boxTop - scrollTop;
                 let clipBoxWidth = getStyle(drag, "width");
                 let clipBoxHeight = getStyle(drag, "height");
-                let ox = _x / originWidth * originWidth;
-                let oy = _y / originHeight * originHeight;
-                let ow = clipBoxWidth / originWidth * originWidth;
-                let oh = clipBoxHeight / originHeight * originHeight;
-                resultCtx.drawImage(img, ox, oy, ow, oh, 0, 0, 200, 200);
+                let ox = _x / originWidth * imgW;
+                let oy = _y / originHeight * imgH;
+                let ow = clipBoxWidth / originWidth * imgW;
+                let oh = clipBoxHeight / originHeight * imgH;
+                resultCanvas.width = clipBoxWidth;
+                resultCanvas.height = clipBoxHeight;
+                resultCtx.drawImage(img, ox, oy, ow, oh, 0, 0, clipBoxWidth, clipBoxHeight);
+                // resultCtx.drawImage(img, _x, _y, clipBoxWidth, clipBoxHeight, 0, 0, clipBoxWidth, clipBoxHeight);
+                resultCanvas.toBlob(blob => {
+                    this.$emit("clipComplete", blob);
+                    this.cancel();
+                });
             }
             // clipBtn.onclick = () => {
             //     clipCanvas.style.display = "block";
@@ -382,7 +393,7 @@ export default {
             // }
         },
         cancel() {
-
+            this.$emit("input", false);
         }
     }
 }

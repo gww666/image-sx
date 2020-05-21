@@ -38,7 +38,7 @@
                 </div>
             </div>
         </div>
-        <clip ref="clip" v-model="clipVisible"></clip>
+        <clip ref="clip" v-model="clipVisible" @clipComplete="clipComplete"></clip>
     </div>
     
 </template>
@@ -115,6 +115,15 @@ export default {
         }
     },
     methods: {
+        async clipComplete(file) {
+            let value = await this.md5(file);
+            file.md5 = value;
+            let url = window.URL.createObjectURL(file);
+            this.$emit("fileChange", {
+                url,
+                file
+            });
+        },
         md5(data) {
             return new Promise(resolve => {
                 let bmf = new BMF();

@@ -7,6 +7,7 @@
 				<div @click="addProps.click">
 					这是自定义的按钮1
 				</div>
+				<img :src="clipUrl" />
 			</template>
 		</image-x-mobile>
 		<image-x-mobile @fileChange="fileChange2" mode="data" slotName="add">
@@ -26,15 +27,16 @@ export default {
 	name: "app",
 	data() {
 		return {
-			imgs: []
+			imgs: [],
+			clipUrl: ""
 		}
 	},
 	methods: {
 		fileChange(arr) {
 			console.log("arr", arr);
 		},
-		fileChange1(arr) {
-			console.log("1", arr);
+		fileChange1({url, file}) {
+			this.clipUrl = url;
 		},
 		fileChange2(arr) {
 			console.log("2", arr);
