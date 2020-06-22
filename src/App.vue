@@ -2,7 +2,7 @@
 	<div id="app">
 		<image-x @fileChange="fileChange" mode="preview" :imgUrls="imgs"></image-x>
 		<image-x @fileChange="fileChange" mode="preview" :imgUrls="imgs"></image-x>
-		<image-x-mobile @fileChange="fileChange1" mode="clip" slotName="add">
+		<image-x-mobile @fileChange="fileChange1" mode="clip" slotName="add" :clipOptions="{ratio: 2.37}">
 			<template v-slot:add="{addProps}">
 				<div @click="addProps.click">
 					这是自定义的按钮1

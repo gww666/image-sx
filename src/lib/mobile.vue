@@ -99,6 +99,10 @@ export default {
         slotName: {
             type: String | Array,
             default: ""
+        },
+        clipOptions: {
+            type: Object,
+            default: () => ({})
         }
     },
     data() {
@@ -175,7 +179,8 @@ export default {
                 } else if (this.mode === "clip") {
                     this.clipVisible = true;
                     setTimeout(() => {
-                        this.$refs.clip.init(url);
+                        let {ratio} = this.clipOptions;
+                        this.$refs.clip.init(url, {ratio});
                     }, 17);
                     
                 }

@@ -8,8 +8,11 @@
             
         </div>
         <!-- <button type="button" class="clipBtn">裁剪</button> -->
-        <div class="cancel" @cancel="cancel">取消</div>
-        <div class="confirm">确定</div>
+        <div class="clip-btn-box">
+            <div class="cancel" @click="cancel">取消</div>
+            <div class="confirm">确定</div>
+        </div>
+        
         <!-- <canvas class="result" width="200" height="200"></canvas> -->
     </div>
 </template>
@@ -43,9 +46,10 @@ export default {
             let clipCanvas = $(".clip");
             // let resultCanvas = $(".result");
             let drag = $(".drag");
+            drag.style.left = 0;
+            drag.style.top = 0;
             let box = $(".box");
             let confirm = $(".confirm");
-            let cancel = $(".cancel");
             // let clipBtn = $(".clipBtn");
             // console.log(canvas);
             
@@ -394,6 +398,9 @@ export default {
         },
         cancel() {
             this.$emit("input", false);
+            // let $ = this.$;
+            // let drag = $(".drag");
+            
         }
     }
 }
@@ -406,11 +413,35 @@ export default {
     height: 100%;
     width: 100%;
     z-index: 1;
-    background: rgba(#000, 0.6);
+    background: rgba(#000, 0.9);
     display: flex;
     flex-flow: column nowrap;
     justify-content: center;
     align-items: center;
+
+    .clip-btn-box {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 2;
+        margin-top: 20px;
+
+        &>div {
+            font-size: 16px;
+            height: 32px;
+            line-height: normal;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 15px;
+            color: #f1f1f1;
+            border: 1px solid #f1f1f1;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+    }
 }
 .box {
     position: relative;
