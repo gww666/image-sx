@@ -1,5 +1,5 @@
 <template>
-    <div class="image-sx-box">
+    <div class="image-sx-box" @comClick="comClick">
         <!-- 预览的盒子 -->
         <div 
             class="preview-box"
@@ -14,13 +14,19 @@
                 <span @click="deleteImgData(index)">删 除</span>
             </div>
         </div>
-        <div v-if="!addSlot" class="add-box" :style="{width, height}" v-show="previewUrlArray.length < maxCount">
+        <!-- <div v-if="!addSlot" class="add-box" :style="{width, height}" v-show="previewUrlArray.length < maxCount">
             <div></div>
             <div></div>
             <div class="add-box-cover" @click="showPopupWindow"></div>
-        </div>
+        </div> -->
         <input ref="fileInput" type="file" @change="fileChange" class="file-input" />
-        <slot name="add" v-bind:addProps="addProps"></slot>
+        <slot v-bind:addProps="addProps">
+            <div class="add-box" :style="{width, height}" v-show="previewUrlArray.length < maxCount">
+                <div></div>
+                <div></div>
+                <div class="add-box-cover" @click="showPopupWindow"></div>
+            </div>
+        </slot>
         <div class="menu-box" ref="menuBox">
             <div class="content-box" ref="contentBox">
                 <div class="file-box">
@@ -119,6 +125,10 @@ export default {
         }
     },
     methods: {
+        comClick() {
+            // console.log("item.click");
+            this.showPopupWindow();
+        },
         async clipComplete(file) {
             let value = await this.md5(file);
             file.md5 = value;
